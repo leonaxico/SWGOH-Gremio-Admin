@@ -1,0 +1,5 @@
+server:
+  port: 8081
+
+comlink:
+  url: ${COMLINK_URL:http://localhost:3000}

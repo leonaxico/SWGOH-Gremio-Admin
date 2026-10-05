@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SWGOH TB Deployment Optimizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+<div class="container">
+    <h1 class="mb-4">SWGOH Territory Battle Deployment Optimizer</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">1. Fetch guild roster</h5>
+            <form method="post" th:action="@{/guild/fetch}" class="row g-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label">Ally code</label>
+                    <input type="text" name="allyCode" class="form-control" th:value="${allyCode}">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Fetch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4" th:if="${guild != null}">
+        <div class="card-body">
+            <h5 class="card-title"
+                th:text="'Guild: ' + ${guild.name} + ' (' + ${#lists.size(guild.players)} + ' members)'"></h5>
+            <table class="table table-sm">
+                <thead>
+                <tr>
+                    <th>Ally Code</th>
+                    <th>Name</th>
+                    <th>GP</th>
+                    <th>Units tracked</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${guild.players}">
+                    <td th:text="${p.allyCode}"></td>
+                    <td th:text="${p.name}"></td>
+                    <td th:text="${p.gp}"></td>
+                    <td th:text="${p.unitsTracked}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">2. Run optimization</h5>
+            <form method="post" th:action="@{/optimize}" class="row g-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label">Territory Battle</label>
+                    <select name="tbId" class="form-select">
+                        <option th:each="tb : ${tbs}" th:value="${tb.tbId}" th:text="${tb.name}"
+                                th:selected="${tb.tbId} == ${selectedTb}"></option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label">Phase</label>
+                    <input type="text" name="phase" class="form-control" placeholder="phase_1"
+                           th:value="${selectedPhase}">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Run optimization</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4" th:if="${result != null}">
+        <div class="card-body">
+            <h5 class="card-title">Assignments</h5>
+            <table class="table table-sm" th:if="${#lists.size(result.assignments) > 0}">
+                <thead>
+                <tr>
+                    <th>Mission</th>
+                    <th>Player</th>
+                    <th>Unit</th>
+                    <th>Unit Power</th>
+                    <th>Priority Score</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${result.assignments}">
+                    <td th:text="${a.missionName}"></td>
+                    <td th:text="${a.playerName}"></td>
+                    <td th:text="${a.unitName}"></td>
+                    <td th:text="${a.unitPower}"></td>
+                    <td th:text="${a.priorityScore}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <p th:if="${#lists.size(result.assignments) == 0}" class="text-muted">No assignments could be made.</p>
+
+            <div th:if="${#lists.size(result.unfilled) > 0}">
+                <h6 class="mt-3">Unfilled slots</h6>
+                <ul>
+                    <li th:each="u : ${result.unfilled}" class="text-danger"
+                        th:text="${u.missionName} + ': short ' + ${u.shortBy} + ' player(s)'"></li>
+                </ul>
+            </div>
+            <p th:if="${#lists.size(result.unfilled) == 0}" class="text-success">All slots filled.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

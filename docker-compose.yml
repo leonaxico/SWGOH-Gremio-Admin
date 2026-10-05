@@ -1,0 +1,30 @@
+services:
+  comlink:
+    image: ghcr.io/swgoh-utils/swgoh-comlink:latest
+    container_name: swgoh-comlink
+    ports:
+      - "3000:3000"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: swgoh-backend
+    depends_on:
+      - comlink
+    environment:
+      - COMLINK_URL=http://comlink:3000
+    ports:
+      - "8081:8081"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: swgoh-frontend
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=http://backend:8081
+    ports:
+      - "8080:8080"

@@ -1,0 +1,5 @@
+server:
+  port: 8080
+
+backend:
+  url: ${BACKEND_URL:http://localhost:8081}
