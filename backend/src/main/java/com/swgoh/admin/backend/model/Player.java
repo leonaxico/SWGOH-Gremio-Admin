@@ -30,11 +30,4 @@ public class Player {
     public Map<String, Unit> getUnits() {
         return units;
     }
-
-    public double avgRosterPower() {
-        if (units.isEmpty()) {
-            return 0.0;
-        }
-        return units.values().stream().mapToInt(Unit::power).average().orElse(0.0);
-    }
 }

@@ -35,7 +35,10 @@ public class GuildLoader {
 
         JsonNode guildRaw = comlinkClient.getGuild(guildId);
         JsonNode guildNode = guildRaw.has("guild") ? guildRaw.path("guild") : guildRaw;
-        String guildName = guildNode.path("name").asText(guildId);
+        String guildName = seedRaw.path("guildName").asText("");
+        if (guildName.isBlank()) {
+            guildName = guildNode.path("profile").path("name").asText(guildId);
+        }
 
         Guild guild = new Guild(guildId, guildName);
 

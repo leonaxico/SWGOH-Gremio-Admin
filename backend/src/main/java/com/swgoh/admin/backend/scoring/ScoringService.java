@@ -1,78 +1,99 @@
 package com.swgoh.admin.backend.scoring;
 
-import com.swgoh.admin.backend.model.Guild;
 import com.swgoh.admin.backend.model.MissionRequirement;
-import com.swgoh.admin.backend.model.Player;
 import com.swgoh.admin.backend.model.Unit;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
- * Per-(player, unit) scoring used to drive assignment.
+ * Decides whether a unit fits a mission and builds a squad from a pool of
+ * units.
  * <p>
- * dependencyScores: allyCode -> 1 / (# guild members with a viable copy for
- * a given requirement). Higher = fewer alternatives = harder to replace
- * this player for that requirement.
- * rosterShare: unit power / player's own average roster power. Greater
- * than 1 means this unit is a standout piece of their roster.
+ * Requirement semantics, taken from campaign entryCategoryAllowed (every
+ * live TB mission uses matchType 2, i.e. "any of the listed categories"):
+ * <ul>
+ *   <li>a filler unit needs at least one of requiredCategories and none of
+ *       excludedCategories;</li>
+ *   <li>every unit -- mandatory ones included -- must meet the star floor,
+ *       and characters the gear/relic floor;</li>
+ *   <li>mandatoryUnits must all be in the squad and count toward minUnits;</li>
+ *   <li>fleet missions with commanderCategories need a capital ship from one
+ *       of them; it also counts toward minUnits.</li>
+ * </ul>
  */
 @Service
 public class ScoringService {
 
-    public boolean unitMeetsRequirement(Unit unit, MissionRequirement req) {
-        boolean hasSpecific = !req.specificUnits().isEmpty();
-        boolean hasTags = !req.requiredTags().isEmpty();
-        boolean matchesSpecific = hasSpecific && req.specificUnits().contains(unit.baseId());
-        boolean matchesTag = hasTags && unit.tags().stream().anyMatch(req.requiredTags()::contains);
-
-        if (hasSpecific && hasTags) {
-            if (!matchesSpecific && !matchesTag) {
-                return false;
-            }
-        } else if (hasSpecific) {
-            if (!matchesSpecific) {
-                return false;
-            }
-        } else if (hasTags) {
-            if (!matchesTag) {
-                return false;
-            }
+    /** Unit meets the star/gear/relic floors and isn't excluded. Doesn't check categories. */
+    public boolean meetsFloors(Unit unit, MissionRequirement req) {
+        if (unit.ship() != req.ship() || unit.rarity() < req.minRarity()) {
+            return false;
         }
-
-        return unit.power() >= req.minUnitGp();
+        if (!unit.ship() && (unit.gearLevel() < req.minGearLevel() || unit.relicTier() < req.minRelic())) {
+            return false;
+        }
+        return unit.tags().stream().noneMatch(req.excludedCategories()::contains);
     }
 
-    public Map<String, List<Unit>> viableOwners(Guild guild, MissionRequirement req) {
-        Map<String, List<Unit>> result = new LinkedHashMap<>();
-        for (Player player : guild.getPlayers().values()) {
-            List<Unit> matches = player.getUnits().values().stream()
-                    .filter(u -> unitMeetsRequirement(u, req))
-                    .toList();
-            if (!matches.isEmpty()) {
-                result.put(player.getAllyCode(), matches);
+    /** Unit could fill a regular (non-mandatory, non-commander) squad slot. */
+    public boolean qualifies(Unit unit, MissionRequirement req) {
+        if (!meetsFloors(unit, req) || (req.ship() && !req.commanderCategories().isEmpty() && unit.capitalShip())) {
+            return false;
+        }
+        return hasAny(unit, req.requiredCategories());
+    }
+
+    /**
+     * Builds the cheapest valid squad: mandatory units, then a commander
+     * (fleet), then fillers in {@code preference} order until minUnits is
+     * reached. Empty when the pool can't satisfy the mission.
+     */
+    public Optional<List<Unit>> buildSquad(Collection<Unit> pool, MissionRequirement req, Comparator<Unit> preference) {
+        Map<String, Unit> byId = pool.stream().collect(Collectors.toMap(Unit::baseId, Function.identity()));
+        List<Unit> squad = new ArrayList<>();
+
+        for (String id : req.mandatoryUnits()) {
+            Unit unit = byId.get(id);
+            if (unit == null || !meetsFloors(unit, req)) {
+                return Optional.empty();
             }
+            squad.add(unit);
         }
-        return result;
+
+        if (req.ship() && !req.commanderCategories().isEmpty() && squad.stream().noneMatch(Unit::capitalShip)) {
+            Optional<Unit> commander = pool.stream()
+                    .filter(Unit::capitalShip)
+                    .filter(u -> meetsFloors(u, req) && hasAny(u, req.commanderCategories()))
+                    .min(preference);
+            if (commander.isEmpty()) {
+                return Optional.empty();
+            }
+            squad.add(commander.get());
+        }
+
+        List<Unit> fillers = pool.stream()
+                .filter(u -> !squad.contains(u) && qualifies(u, req))
+                .sorted(preference)
+                .toList();
+        for (Unit unit : fillers) {
+            if (squad.size() >= req.minUnits()) {
+                break;
+            }
+            squad.add(unit);
+        }
+
+        return squad.size() >= req.minUnits() ? Optional.of(squad) : Optional.empty();
     }
 
-    public Map<String, Double> dependencyScores(Guild guild, MissionRequirement req) {
-        Map<String, List<Unit>> owners = viableOwners(guild, req);
-        if (owners.isEmpty()) {
-            return Map.of();
-        }
-        double base = 1.0 / owners.size();
-        Map<String, Double> result = new LinkedHashMap<>();
-        owners.keySet().forEach(ac -> result.put(ac, base));
-        return result;
-    }
-
-    public double rosterShare(double playerAvgPower, int unitPower) {
-        if (playerAvgPower <= 0) {
-            return 0.0;
-        }
-        return unitPower / playerAvgPower;
+    private static boolean hasAny(Unit unit, List<String> categories) {
+        return categories.isEmpty() || unit.tags().stream().anyMatch(categories::contains);
     }
 }

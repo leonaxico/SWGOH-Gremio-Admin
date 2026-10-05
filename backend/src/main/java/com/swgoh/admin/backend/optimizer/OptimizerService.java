@@ -3,7 +3,9 @@ package com.swgoh.admin.backend.optimizer;
 import com.swgoh.admin.backend.model.Assignment;
 import com.swgoh.admin.backend.model.Guild;
 import com.swgoh.admin.backend.model.MissionRequirement;
+import com.swgoh.admin.backend.model.MissionSummary;
 import com.swgoh.admin.backend.model.Player;
+import com.swgoh.admin.backend.model.SquadUnit;
 import com.swgoh.admin.backend.model.Unit;
 import com.swgoh.admin.backend.scoring.ScoringService;
 import org.springframework.stereotype.Service;
@@ -11,18 +13,25 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 
 /**
- * Greedy assignment: players -> mission requirement slots.
- * <p>
- * Sorts every (requirement, candidate player) pair by a priority score
- * (dependency score dominant, roster share as a tiebreaker), then walks
- * the sorted list assigning players to open slots -- each player deploys
- * to at most one mission for the phase being optimized.
+ * Plans one TB phase. In a TB every player may attempt every mission once,
+ * but a unit used in one mission is spent for the rest of the phase -- so
+ * the problem is, per player, which missions to spend which units on.
+ * <ol>
+ *   <li>Dependency: for each mission count the players who could field a
+ *       squad with their full roster. Fewer eligible players = the guild
+ *       depends more on each of them = higher priority (1 / eligible).</li>
+ *   <li>Per player, walk missions in priority order and build each squad
+ *       from the units still available, preferring units that fit the fewest
+ *       of the player's remaining missions (then the strongest), so scarce
+ *       units aren't burned on missions anything could fill.</li>
+ * </ol>
+ * Missions nobody can attempt are reported with 0 eligible players.
  */
 @Service
 public class OptimizerService {
@@ -33,69 +42,62 @@ public class OptimizerService {
         this.scoringService = scoringService;
     }
 
-    public record Result(List<Assignment> assignments, List<UnfilledSlot> unfilled) {}
-
-    public record UnfilledSlot(String missionId, String missionName, int shortBy) {}
-
-    private record Candidate(double priority, MissionRequirement req, String allyCode, Unit unit) {}
+    public record Result(List<MissionSummary> missions, List<Assignment> assignments) {}
 
     public Result optimizePhase(Guild guild, List<MissionRequirement> missions) {
-        List<Candidate> candidates = new ArrayList<>();
+        Comparator<Unit> strongestFirst = Comparator.comparingInt(Unit::power).reversed();
 
-        for (MissionRequirement req : missions) {
-            Map<String, Double> depScores = scoringService.dependencyScores(guild, req);
-            Map<String, List<Unit>> owners = scoringService.viableOwners(guild, req);
-
-            for (var entry : owners.entrySet()) {
-                String allyCode = entry.getKey();
-                Player player = guild.getPlayers().get(allyCode);
-                Unit bestUnit = entry.getValue().stream()
-                        .max(Comparator.comparingInt(Unit::power))
-                        .orElseThrow();
-                double share = scoringService.rosterShare(player.avgRosterPower(), bestUnit.power());
-                double priority = depScores.getOrDefault(allyCode, 0.0) * (1 + Math.min(share, 3.0) / 10);
-                candidates.add(new Candidate(priority, req, allyCode, bestUnit));
+        Map<String, Integer> eligible = new HashMap<>();
+        for (MissionRequirement m : missions) {
+            int count = 0;
+            for (Player p : guild.getPlayers().values()) {
+                if (scoringService.buildSquad(p.getUnits().values(), m, strongestFirst).isPresent()) {
+                    count++;
+                }
             }
+            eligible.put(m.missionId(), count);
         }
 
-        candidates.sort((a, b) -> Double.compare(b.priority(), a.priority()));
-
-        Set<String> usedPlayers = new HashSet<>();
-        Map<String, Integer> slotsFilled = new HashMap<>();
-        missions.forEach(m -> slotsFilled.put(m.missionId(), 0));
+        List<MissionRequirement> ordered = missions.stream()
+                .filter(m -> eligible.get(m.missionId()) > 0)
+                .sorted(Comparator.<MissionRequirement>comparingInt(m -> eligible.get(m.missionId()))
+                        .thenComparing(m -> m.type() != MissionRequirement.Type.SPECIAL))
+                .toList();
 
         List<Assignment> assignments = new ArrayList<>();
-        for (Candidate c : candidates) {
-            if (usedPlayers.contains(c.allyCode())) {
-                continue;
-            }
-            if (slotsFilled.get(c.req().missionId()) >= c.req().minCount()) {
-                continue;
-            }
+        Map<String, Integer> assigned = new HashMap<>();
+        for (Player player : guild.getPlayers().values()) {
+            Map<String, Unit> available = new LinkedHashMap<>(player.getUnits());
+            for (int i = 0; i < ordered.size(); i++) {
+                MissionRequirement mission = ordered.get(i);
+                List<MissionRequirement> remaining = ordered.subList(i + 1, ordered.size());
+                Comparator<Unit> preference = Comparator
+                        .<Unit>comparingLong(u -> remaining.stream().filter(r -> scoringService.qualifies(u, r)).count())
+                        .thenComparing(strongestFirst);
 
-            Player player = guild.getPlayers().get(c.allyCode());
-            assignments.add(new Assignment(
-                    c.req().missionId(),
-                    c.req().name(),
-                    c.allyCode(),
-                    player.getName(),
-                    c.unit().baseId(),
-                    c.unit().name(),
-                    c.unit().power(),
-                    Math.round(c.priority() * 10000.0) / 10000.0
-            ));
-            usedPlayers.add(c.allyCode());
-            slotsFilled.merge(c.req().missionId(), 1, Integer::sum);
-        }
-
-        List<UnfilledSlot> unfilled = new ArrayList<>();
-        for (MissionRequirement req : missions) {
-            int filled = slotsFilled.get(req.missionId());
-            if (filled < req.minCount()) {
-                unfilled.add(new UnfilledSlot(req.missionId(), req.name(), req.minCount() - filled));
+                Optional<List<Unit>> squad = scoringService.buildSquad(available.values(), mission, preference);
+                if (squad.isEmpty()) {
+                    continue;
+                }
+                squad.get().forEach(u -> available.remove(u.baseId()));
+                assigned.merge(mission.missionId(), 1, Integer::sum);
+                assignments.add(new Assignment(
+                        mission.missionId(),
+                        mission.name(),
+                        player.getAllyCode(),
+                        player.getName(),
+                        squad.get().stream().map(SquadUnit::of).toList(),
+                        Math.round(10000.0 / eligible.get(mission.missionId())) / 10000.0
+                ));
             }
         }
 
-        return new Result(assignments, unfilled);
+        List<MissionSummary> summaries = missions.stream()
+                .map(m -> new MissionSummary(
+                        m.missionId(), m.name(), m.territory(), m.type(), m.bonus(), m.requirementText(),
+                        eligible.get(m.missionId()), assigned.getOrDefault(m.missionId(), 0)))
+                .toList();
+
+        return new Result(summaries, assignments);
     }
 }

@@ -55,15 +55,15 @@
             <form method="post" th:action="@{/optimize}" class="row g-2 align-items-end">
                 <div class="col-auto">
                     <label class="form-label">Territory Battle</label>
-                    <select name="tbId" class="form-select">
+                    <select name="tbId" id="tbId" class="form-select">
                         <option th:each="tb : ${tbs}" th:value="${tb.tbId}" th:text="${tb.name}"
+                                th:attr="data-phases=${#strings.listJoin(tb.phases, ',')}"
                                 th:selected="${tb.tbId} == ${selectedTb}"></option>
                     </select>
                 </div>
                 <div class="col-auto">
                     <label class="form-label">Phase</label>
-                    <input type="text" name="phase" class="form-control" placeholder="phase_1"
-                           th:value="${selectedPhase}">
+                    <select name="phase" id="phase" class="form-select" th:attr="data-selected=${selectedPhase}"></select>
                 </div>
                 <div class="col-auto">
                     <button type="submit" class="btn btn-primary">Run optimization</button>
@@ -74,39 +74,74 @@
 
     <div class="card mb-4" th:if="${result != null}">
         <div class="card-body">
-            <h5 class="card-title">Assignments</h5>
-            <table class="table table-sm" th:if="${#lists.size(result.assignments) > 0}">
+            <h5 class="card-title"
+                th:text="${result.tbName} + ' · ' + ${#strings.replace(result.phase, 'phase_', 'Phase ')} + ' · ' + ${result.guildMembers} + ' members'"></h5>
+            <p class="text-muted small mb-3">
+                <b>Eligible</b>: players who could field the squad with their whole roster.
+                <b>Planned</b>: players assigned once each player's units are shared out across
+                the phase (a unit can only be used once per phase). Missions are planned
+                scarcest-first.
+            </p>
+            <table class="table table-sm align-middle">
                 <thead>
                 <tr>
                     <th>Mission</th>
-                    <th>Player</th>
-                    <th>Unit</th>
-                    <th>Unit Power</th>
-                    <th>Priority Score</th>
+                    <th>Requirement</th>
+                    <th class="text-end">Eligible</th>
+                    <th class="text-end">Planned</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="a : ${result.assignments}">
-                    <td th:text="${a.missionName}"></td>
-                    <td th:text="${a.playerName}"></td>
-                    <td th:text="${a.unitName}"></td>
-                    <td th:text="${a.unitPower}"></td>
-                    <td th:text="${a.priorityScore}"></td>
-                </tr>
+                <th:block th:each="m : ${result.missions}">
+                    <tr th:classappend="${m.eligiblePlayers == 0} ? 'table-danger'">
+                        <td>
+                            <span th:text="${m.name}"></span>
+                            <span class="badge text-bg-warning" th:if="${m.type == 'SPECIAL'}">Special</span>
+                            <span class="badge text-bg-info" th:if="${m.type == 'FLEET'}">Fleet</span>
+                            <span class="badge text-bg-secondary" th:if="${m.bonus}">Bonus zone</span>
+                        </td>
+                        <td class="small" th:text="${m.requirement}"></td>
+                        <td class="text-end" th:text="${m.eligiblePlayers}"></td>
+                        <td class="text-end" th:text="${m.assignedPlayers}"></td>
+                    </tr>
+                    <tr th:if="${m.assignedPlayers > 0}">
+                        <td colspan="4" class="pt-0 border-0">
+                            <details class="ms-3 mb-2">
+                                <summary class="small text-muted">Planned squads</summary>
+                                <table class="table table-sm small mb-0">
+                                    <tr th:each="a : ${result.assignments}" th:if="${a.missionId == m.missionId}">
+                                        <td class="text-nowrap" th:text="${a.playerName}"></td>
+                                        <td>
+                                            <span th:each="u, st : ${a.squad}"
+                                                  th:text="${u.name} + ' (' + ${u.level} + ')' + (${st.last} ? '' : ', ')"></span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </details>
+                        </td>
+                    </tr>
+                </th:block>
                 </tbody>
             </table>
-            <p th:if="${#lists.size(result.assignments) == 0}" class="text-muted">No assignments could be made.</p>
-
-            <div th:if="${#lists.size(result.unfilled) > 0}">
-                <h6 class="mt-3">Unfilled slots</h6>
-                <ul>
-                    <li th:each="u : ${result.unfilled}" class="text-danger"
-                        th:text="${u.missionName} + ': short ' + ${u.shortBy} + ' player(s)'"></li>
-                </ul>
-            </div>
-            <p th:if="${#lists.size(result.unfilled) == 0}" class="text-success">All slots filled.</p>
         </div>
     </div>
 </div>
+<script>
+    // Phase options follow the selected TB (each TB lists its own phases).
+    const tbSelect = document.getElementById('tbId');
+    const phaseSelect = document.getElementById('phase');
+    function refreshPhases() {
+        const option = tbSelect.selectedOptions[0];
+        const wanted = phaseSelect.value || phaseSelect.dataset.selected;
+        phaseSelect.innerHTML = '';
+        (option ? option.dataset.phases.split(',') : []).forEach(p => {
+            const o = new Option(p.replace('phase_', 'Phase '), p);
+            o.selected = p === wanted;
+            phaseSelect.add(o);
+        });
+    }
+    tbSelect.addEventListener('change', refreshPhases);
+    refreshPhases();
+</script>
 </body>
 </html>

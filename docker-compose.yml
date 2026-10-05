@@ -2,6 +2,8 @@ services:
   comlink:
     image: ghcr.io/swgoh-utils/swgoh-comlink:latest
     container_name: swgoh-comlink
+    environment:
+      - APP_NAME=swgoh-gremio-admin
     ports:
       - "3000:3000"
 

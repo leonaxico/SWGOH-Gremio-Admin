@@ -1,8 +1,8 @@
 package com.swgoh.admin.backend.web;
 
-import com.swgoh.admin.backend.config.TbRegistry;
 import com.swgoh.admin.backend.dto.OptimizeRequest;
 import com.swgoh.admin.backend.dto.OptimizeResponse;
+import com.swgoh.admin.backend.gamedata.GameDataService;
 import com.swgoh.admin.backend.model.Guild;
 import com.swgoh.admin.backend.model.MissionRequirement;
 import com.swgoh.admin.backend.model.TBDefinition;
@@ -19,12 +19,12 @@ import java.util.List;
 @RequestMapping("/api/optimize")
 public class OptimizeController {
 
-    private final TbRegistry tbRegistry;
+    private final GameDataService gameData;
     private final GuildCacheService cacheService;
     private final OptimizerService optimizerService;
 
-    public OptimizeController(TbRegistry tbRegistry, GuildCacheService cacheService, OptimizerService optimizerService) {
-        this.tbRegistry = tbRegistry;
+    public OptimizeController(GameDataService gameData, GuildCacheService cacheService, OptimizerService optimizerService) {
+        this.gameData = gameData;
         this.cacheService = cacheService;
         this.optimizerService = optimizerService;
     }
@@ -34,15 +34,16 @@ public class OptimizeController {
         Guild guild = cacheService.getCurrent()
                 .orElseThrow(() -> new IllegalStateException("No guild loaded -- call /api/guild/fetch first"));
 
-        TBDefinition tb = tbRegistry.get(request.tbId());
+        TBDefinition tb = gameData.tb(request.tbId());
         List<MissionRequirement> missions = tb.missionsForPhase(request.phase());
         if (missions.isEmpty()) {
             throw new IllegalArgumentException(
-                    "No missions configured for phase '" + request.phase() + "' -- add some in TbRegistry."
+                    tb.name() + " has no missions in '" + request.phase() + "' -- phases are " + tb.phases()
             );
         }
 
         OptimizerService.Result result = optimizerService.optimizePhase(guild, missions);
-        return new OptimizeResponse(result.assignments(), result.unfilled());
+        return new OptimizeResponse(tb.tbId(), tb.name(), request.phase(), guild.getPlayers().size(),
+                result.missions(), result.assignments());
     }
 }
