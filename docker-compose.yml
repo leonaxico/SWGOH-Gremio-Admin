@@ -16,6 +16,10 @@ services:
       - comlink
     environment:
       - COMLINK_URL=http://comlink:3000
+      - PLATOONS_DIR=/app/platoons
+    volumes:
+      # Platoon requirement files: templates, your hand-filled lists, live captures.
+      - ./platoons:/app/platoons
     ports:
       - "8081:8081"
 

@@ -2,8 +2,9 @@
 
 Territory Battle planner for a SWGOH guild. It pulls every member's roster
 from SWGoH Comlink, resolves the **real** TB mission requirements from the
-game data, and plans which squads each player should send to which mission
-in a phase.
+game data, and plans each phase: who fills which platoon slot, and which
+squads each player sends to which mission. A farm list shows the units that
+keep platoons from being completed and who in the guild is closest to them.
 
 Java/Spring rewrite of an earlier Python/Streamlit prototype, split into
 three containers.
@@ -87,10 +88,64 @@ The phase comes from the zone id (`tb3_mixed_phase01_conflict01_strike01`
 currently in the game are supported: Rise of the Empire, both Geonosis TBs
 and both Hoth TBs.
 
-## How the optimizer plans a phase
+## Platoons
+
+Comlink's static game data has the platoon **structure**
+(`territoryBattleDefinition[].reconZoneDefinition`: zones per phase, 6
+platoons × 3 squads, unit floor `unitRarity` / `unitRelicTier`, max units per
+player per zone) but **not which units** each squad needs. Those come from:
+
+1. **Live:** while a TB is running, `/guild` returns
+   `territoryBattleStatus[].reconZoneStatus[].platoon[].squad[].unit[]` with
+   `unitIdentifier` and `memberId` (who already filled the slot). Every
+   **Fetch** during an active TB captures this, and the file below is
+   overwritten with it.
+2. **File:** `platoons/<tbId>.json`, one per TB. The backend writes a
+   template for any TB without a file, with every zone, phase, territory and
+   floor already filled in. Fill each platoon's `units` with names as shown
+   in game or on swgoh.gg (English), or base ids like `VADER`. Repeat a unit
+   if the platoon needs it more than once (usually 15 per platoon). Set
+   `"source": "manual"` when done. A hand-made file is kept as
+   `<tbId>.manual.json` the first time a live capture replaces it.
+
+| TB id | TB |
+|---|---|
+| `t05D` | Rise of the Empire |
+| `t04D` | Geonosis: Republic Offensive |
+| `t03D` | Geonosis: Separatist Might |
+| `t02D` | Hoth: Imperial Retaliation |
+| `t01D` | Hoth: Rebel Assault |
+
+Names that several game units share (event variants such as
+`GENERALKENOBI_GLE`) resolve to the unit players can actually own. Names that
+don't resolve are listed as warnings in the UI. ROTE platoons are fixed; for
+the older TBs, check against a live capture since they may vary between runs.
+
+`platoons/` is mounted into the backend container (`docker-compose.yml`), so
+edits apply on the next **Run optimization** without a rebuild.
+
+## How a phase is planned
+
+### 1. Platoons (`PlatoonPlanner`)
+
+- A unit placed in a platoon is spent for the phase, and each player can place
+  at most `maxUnitsPerPlayer` (10 in ROTE) per zone.
+- A platoon only pays out when every slot is filled. A platoon that can't be
+  completed gets no units, so they stay free for missions. Its missing slots go
+  to the **farm list** with the 3 guild members closest to the floor.
+- Within a platoon the scarcest slots are filled first. A slot goes to the
+  player who has placed the fewest units so far, using their weakest
+  qualifying copy so strong units stay available for combat.
+- Slots already filled in game (live data) are respected.
+
+**Platoon farm list** (button in the UI, `GET /api/tbs/{tbId}/farm`) runs this
+for every phase of a TB and reports platoons complete per phase. It also lists
+every unit short, which is useful for planning farms before the next TB.
+
+### 2. Missions (`OptimizerService`)
 
 In a TB every player can attempt every mission once, but a unit used in one
-mission is spent for the rest of the phase. `OptimizerService`:
+mission (or platoon) is spent for the rest of the phase:
 
 1. **Dependency:** for each mission, counts the players who could field a
    valid squad with their whole roster (*Eligible*). Fewer eligible players
@@ -98,8 +153,9 @@ mission is spent for the rest of the phase. `OptimizerService`:
 2. **Planning:** for each player, walks missions scarcest-first and builds
    each squad from the units still available. It prefers units that fit the
    fewest of the player's remaining missions, then the strongest, so rare
-   units aren't spent on missions anything could fill. The result is the
-   *Planned* count and each player's squads.
+   units aren't spent on missions anything could fill. Units already placed in
+   platoons are left out. The result is the *Planned* count and each player's
+   squads.
 
 Missions nobody can attempt show 0 eligible (highlighted red in the UI).
 
@@ -126,8 +182,12 @@ takes a few minutes. Comlink needs `APP_NAME` (already set in
 1. Enter an ally code (defaults to `191483497`) and click **Fetch**. This
    takes ~15 s for a 50-member guild.
 2. Pick a TB and phase, then click **Run optimization**.
-3. Each mission shows its requirement and eligible/planned counts. Expand
+3. **Platoons** shows each platoon as complete or short. Expand **Slots** to see
+   who places what, or who is closest for a missing unit. Below that is the
+   farm list for the phase.
+4. **Missions** shows each requirement with eligible/planned counts. Expand
    **Planned squads** to see who sends what.
+5. **Platoon farm list** shows readiness across every phase of the selected TB.
 
 ### Names in another language
 
@@ -145,8 +205,9 @@ mvn -pl backend -am spring-boot:run
 mvn -pl frontend -am spring-boot:run
 ```
 
-Both modules default to `localhost` URLs, so no environment variables are
-needed outside Docker.
+Both modules default to `localhost` URLs. `spring-boot:run` runs the backend
+from `backend/`, so point it at the platoon files with
+`PLATOONS_DIR=../platoons`.
 
 ## REST API
 
@@ -155,7 +216,8 @@ needed outside Docker.
 | `GET` | `/api/tbs` | TBs with their phases (from game data) |
 | `POST` | `/api/guild/fetch?allyCode=…` | load the guild and cache it in memory |
 | `GET` | `/api/guild/current` | the cached guild |
-| `POST` | `/api/optimize` `{"tbId":"t05D","phase":"phase_1"}` | plan a phase for the cached guild |
+| `POST` | `/api/optimize` `{"tbId":"t05D","phase":"phase_1"}` | plan a phase (platoons, then missions) for the cached guild |
+| `GET` | `/api/tbs/{tbId}/farm` | platoon readiness and farm list across all phases |
 
 ## Debugging Comlink responses
 
@@ -177,8 +239,12 @@ bash debug/comlink_data_bits.sh        # maps each /data "items" bit to its coll
   often against large guilds.
 - **No real unit GP.** Comlink's raw rosters don't include it. Getting real
   numbers needs a stat calculator such as `swgoh-stats` next to Comlink.
-- **Platoons and deployment aren't planned.** Only combat, special and fleet
-  missions are.
+- **Platoon units need a live capture or a filled file.** Comlink only
+  exposes them during an active TB. Whether its anonymous guest account
+  receives `territoryBattleStatus` for a guild it isn't in hasn't been
+  verified yet; check on the next TB.
+- **Deployment (territory GP) isn't planned.** Only platoons and combat,
+  special and fleet missions are.
 - **Simplified squad rules.** Squads are filled to the minimum size.
   Bonus zones are always included even if not unlocked yet. `legendLimit` /
   `bigUnitLimit` aren't enforced. `matchType` is treated as "any category",

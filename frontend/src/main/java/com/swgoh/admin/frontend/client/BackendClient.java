@@ -1,5 +1,6 @@
 package com.swgoh.admin.frontend.client;
 
+import com.swgoh.admin.frontend.dto.FarmReportDto;
 import com.swgoh.admin.frontend.dto.GuildSummaryDto;
 import com.swgoh.admin.frontend.dto.OptimizeRequestDto;
 import com.swgoh.admin.frontend.dto.OptimizeResponseDto;
@@ -31,6 +32,13 @@ public class BackendClient {
                 .uri("/api/tbs")
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<TbSummaryDto>>() {});
+    }
+
+    public FarmReportDto farm(String tbId) {
+        return restClient.get()
+                .uri("/api/tbs/{tbId}/farm", tbId)
+                .retrieve()
+                .body(FarmReportDto.class);
     }
 
     public OptimizeResponseDto optimize(String tbId, String phase) {

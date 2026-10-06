@@ -3,6 +3,7 @@ package com.swgoh.admin.backend.gamedata;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.swgoh.admin.backend.client.ComlinkClient;
 import com.swgoh.admin.backend.model.MissionRequirement;
+import com.swgoh.admin.backend.model.PlatoonZone;
 import com.swgoh.admin.backend.model.TBDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,7 +60,9 @@ public class GameDataService {
 
     private volatile Catalog catalog;
 
-    private record Catalog(Map<String, TBDefinition> tbs, Map<String, UnitInfo> units) {}
+    private record Catalog(Map<String, TBDefinition> tbs, Map<String, UnitInfo> units, Map<String, String> unitsByName) {}
+
+    private final List<Runnable> onLoad = new CopyOnWriteArrayList<>();
 
     public GameDataService(ComlinkClient comlinkClient,
                            @Value("${comlink.language:ENG_US}") String language) {
@@ -95,6 +99,31 @@ public class GameDataService {
         return Optional.ofNullable(catalog().units().get(baseId));
     }
 
+    /**
+     * Resolves a unit written by a person -- a baseId ("VADER"), a
+     * definitionId ("VADER:SEVEN_STAR") or its name in the configured
+     * language ("Darth Vader", case-insensitive) -- to its baseId.
+     */
+    public Optional<String> resolveUnit(String token) {
+        if (token == null || token.isBlank()) {
+            return Optional.empty();
+        }
+        String id = token.trim().split(":")[0];
+        if (catalog().units().containsKey(id)) {
+            return Optional.of(id);
+        }
+        return Optional.ofNullable(catalog().unitsByName().get(normalizeName(token)));
+    }
+
+    /** Runs once game data is loaded (immediately if it already is). */
+    public void onLoaded(Runnable callback) {
+        if (catalog != null) {
+            callback.run();
+        } else {
+            onLoad.add(callback);
+        }
+    }
+
     private Catalog catalog() {
         Catalog current = catalog;
         if (current == null) {
@@ -103,6 +132,8 @@ public class GameDataService {
                 if (current == null) {
                     current = load();
                     catalog = current;
+                    onLoad.forEach(Runnable::run);
+                    onLoad.clear();
                 }
             }
         }
@@ -128,6 +159,17 @@ public class GameDataService {
             ));
         }
 
+        // Names aren't unique (event variants reuse them): prefer units obtainable now, then the shortest id.
+        Set<String> obtainableNow = new HashSet<>();
+        nz(data.units()).stream()
+                .filter(u -> "0".equals(u.obtainableTime()))
+                .forEach(u -> obtainableNow.add(u.baseId()));
+        Map<String, String> unitsByName = new HashMap<>();
+        units.values().stream()
+                .sorted(Comparator.comparing((UnitInfo u) -> !obtainableNow.contains(u.baseId()))
+                        .thenComparingInt(u -> u.baseId().length()))
+                .forEach(u -> unitsByName.putIfAbsent(normalizeName(u.name()), u.baseId()));
+
         Map<String, String> categoryNames = new HashMap<>();
         for (GameData.Category c : nz(data.category())) {
             String text = loc.get(c.descKey());
@@ -141,10 +183,11 @@ public class GameDataService {
                 .sorted(Comparator.comparing(GameData.TbDef::id).reversed()) // newest TB first
                 .forEach(tb -> tbs.put(tb.id(), buildTb(tb, campaignMissions, units, categoryNames, loc)));
 
-        log.info("Game data {} loaded in {} ms: {} units, {} TBs, {} missions",
+        log.info("Game data {} loaded in {} ms: {} units, {} TBs, {} missions, {} platoon zones",
                 version, System.currentTimeMillis() - start, units.size(), tbs.size(),
-                tbs.values().stream().mapToInt(t -> t.missions().size()).sum());
-        return new Catalog(tbs, units);
+                tbs.values().stream().mapToInt(t -> t.missions().size()).sum(),
+                tbs.values().stream().mapToInt(t -> t.platoonZones().size()).sum());
+        return new Catalog(tbs, units, unitsByName);
     }
 
     private Map<String, GameData.CampaignMission> indexCampaignMissions(GameData data) {
@@ -235,10 +278,49 @@ public class GameDataService {
             ));
         }
 
+        List<PlatoonZone> platoonZones = new ArrayList<>();
+        for (GameData.ReconZone recon : nz(tb.reconZoneDefinition())) {
+            if (recon.zoneDefinition() == null) {
+                continue;
+            }
+            Matcher phase = ZONE_PHASE.matcher(recon.zoneDefinition().zoneId());
+            if (!phase.find()) {
+                continue;
+            }
+            GameData.ConflictZone conflict = conflicts.get(recon.zoneDefinition().linkedConflictId());
+            String territory = conflict == null ? recon.zoneDefinition().linkedConflictId()
+                    : loc.getOrDefault(conflict.zoneDefinition().nameKey(), conflict.zoneDefinition().zoneId());
+            int relicRaw = recon.unitRelicTier();
+            boolean ship = recon.combatType() == UNIT_COMBAT_TYPE_SHIP;
+            platoonZones.add(new PlatoonZone(
+                    recon.zoneDefinition().zoneId(),
+                    "phase_" + Integer.parseInt(phase.group(1)),
+                    territory,
+                    conflict != null && conflict.bonus(),
+                    ship,
+                    recon.unitRarity(),
+                    !ship && relicRaw >= RELIC_TIER_OFFSET ? 13 : 0,
+                    ship ? 0 : Math.max(0, relicRaw - RELIC_TIER_OFFSET),
+                    recon.zoneDefinition().maxUnitCountPerPlayer() > 0
+                            ? recon.zoneDefinition().maxUnitCountPerPlayer() : Integer.MAX_VALUE,
+                    nz(recon.platoonDefinition()).stream().map(GameData.PlatoonDef::id).toList()
+            ));
+        }
+
         TreeSet<String> phases = new TreeSet<>(Comparator.comparingInt(p -> Integer.parseInt(p.substring(6))));
         missions.forEach(m -> phases.add(m.phase()));
+        platoonZones.forEach(z -> phases.add(z.phase()));
         return new TBDefinition(tb.id(), titleCase(loc.getOrDefault(tb.nameKey(), tb.id())),
-                List.copyOf(phases), List.copyOf(missions));
+                List.copyOf(phases), List.copyOf(missions), List.copyOf(platoonZones));
+    }
+
+    /** Lower-case, straight quotes, single spaces -- so "Ahsoka Tano (Snips)" typed by hand matches. */
+    private static String normalizeName(String s) {
+        return s.toLowerCase(Locale.ROOT)
+                .replace('\u2019', '\'').replace('\u2018', '\'')
+                .replace('\u201c', '"').replace('\u201d', '"')
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 
     /** Fallback when the campaign mission has no localized requirement line. */

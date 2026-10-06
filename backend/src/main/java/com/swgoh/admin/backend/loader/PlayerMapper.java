@@ -80,7 +80,7 @@ public class PlayerMapper {
             }
         }
 
-        return new Player(allyCode, name, totalGp, units);
+        return new Player(allyCode, raw.path("playerId").asText(""), name, totalGp, units);
     }
 
     private int extractGp(JsonNode raw) {

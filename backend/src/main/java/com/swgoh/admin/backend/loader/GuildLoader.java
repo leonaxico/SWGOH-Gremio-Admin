@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.swgoh.admin.backend.client.ComlinkClient;
 import com.swgoh.admin.backend.model.Guild;
 import com.swgoh.admin.backend.model.Player;
+import com.swgoh.admin.backend.platoon.PlatoonService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,10 +12,12 @@ public class GuildLoader {
 
     private final ComlinkClient comlinkClient;
     private final PlayerMapper playerMapper;
+    private final PlatoonService platoonService;
 
-    public GuildLoader(ComlinkClient comlinkClient, PlayerMapper playerMapper) {
+    public GuildLoader(ComlinkClient comlinkClient, PlayerMapper playerMapper, PlatoonService platoonService) {
         this.comlinkClient = comlinkClient;
         this.playerMapper = playerMapper;
+        this.platoonService = platoonService;
     }
 
     /**
@@ -35,6 +38,7 @@ public class GuildLoader {
 
         JsonNode guildRaw = comlinkClient.getGuild(guildId);
         JsonNode guildNode = guildRaw.has("guild") ? guildRaw.path("guild") : guildRaw;
+        platoonService.captureLive(guildNode);
         String guildName = seedRaw.path("guildName").asText("");
         if (guildName.isBlank()) {
             guildName = guildNode.path("profile").path("name").asText(guildId);

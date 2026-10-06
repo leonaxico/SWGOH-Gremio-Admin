@@ -1,0 +1,382 @@
+{
+  "tbId" : "t01D",
+  "tbName" : "Hoth: Rebel Assault",
+  "source" : "template",
+  "instructions" : "Fill each platoon's \"units\" with the units it requires: names as shown in game or on swgoh.gg (English), or base ids like VADER. Repeat a unit when the platoon needs it more than once (usually 15 units per platoon: 3 squads of 5). Set \"source\" to \"manual\" once filled. This file is overwritten by live data when the guild is fetched during an active TB; your version is then kept as <tbId>.manual.json.",
+  "zones" : [ {
+    "zoneId" : "phase01_conflict01_recon01",
+    "phase" : "phase_1",
+    "territory" : "Rebel Base",
+    "unitFloor" : "2★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase02_conflict01_recon01",
+    "phase" : "phase_2",
+    "territory" : "Ion Cannon",
+    "unitFloor" : "3★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase02_conflict02_recon01",
+    "phase" : "phase_2",
+    "territory" : "Overlook",
+    "unitFloor" : "3★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase03_conflict01_recon01",
+    "phase" : "phase_3",
+    "territory" : "Rear Airspace",
+    "unitFloor" : "4★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase03_conflict02_recon01",
+    "phase" : "phase_3",
+    "territory" : "Rear Trenches",
+    "unitFloor" : "4★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase03_conflict03_recon01",
+    "phase" : "phase_3",
+    "territory" : "Power Generator",
+    "unitFloor" : "4★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase04_conflict01_recon01",
+    "phase" : "phase_4",
+    "territory" : "Forward Airspace",
+    "unitFloor" : "5★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase04_conflict02_recon01",
+    "phase" : "phase_4",
+    "territory" : "Forward Trenches",
+    "unitFloor" : "5★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase04_conflict03_recon01",
+    "phase" : "phase_4",
+    "territory" : "Outer Pass",
+    "unitFloor" : "5★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase05_conflict01_recon01",
+    "phase" : "phase_5",
+    "territory" : "Contested Airspace",
+    "unitFloor" : "6★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase05_conflict02_recon01",
+    "phase" : "phase_5",
+    "territory" : "Snowfields",
+    "unitFloor" : "6★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase05_conflict03_recon01",
+    "phase" : "phase_5",
+    "territory" : "Forward Stronghold",
+    "unitFloor" : "6★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase06_conflict01_recon01",
+    "phase" : "phase_6",
+    "territory" : "Imperial Fleet Staging Area",
+    "unitFloor" : "7★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase06_conflict02_recon01",
+    "phase" : "phase_6",
+    "territory" : "Imperial Flank",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "phase06_conflict03_recon01",
+    "phase" : "phase_6",
+    "territory" : "Imperial Landing",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  } ]
+}

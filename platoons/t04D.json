@@ -1,0 +1,307 @@
+{
+  "tbId" : "t04D",
+  "tbName" : "Geonosis: Republic Offensive",
+  "source" : "template",
+  "instructions" : "Fill each platoon's \"units\" with the units it requires: names as shown in game or on swgoh.gg (English), or base ids like VADER. Repeat a unit when the platoon needs it more than once (usually 15 units per platoon: 3 squads of 5). Set \"source\" to \"manual\" once filled. This file is overwritten by live data when the guild is fetched during an active TB; your version is then kept as <tbId>.manual.json.",
+  "zones" : [ {
+    "zoneId" : "geonosis_republic_phase01_conflict01_recon01",
+    "phase" : "phase_1",
+    "territory" : "Galactic Republic Fleet",
+    "unitFloor" : "7★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase01_conflict02_recon01",
+    "phase" : "phase_1",
+    "territory" : "Count Dooku's Hangar",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase01_conflict03_recon01",
+    "phase" : "phase_1",
+    "territory" : "Rear Flank",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase02_conflict01_recon01",
+    "phase" : "phase_2",
+    "territory" : "Contested Airspace (Republic)",
+    "unitFloor" : "7★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase02_conflict02_recon01",
+    "phase" : "phase_2",
+    "territory" : "Battleground",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase02_conflict03_recon01",
+    "phase" : "phase_2",
+    "territory" : "Sand Dunes",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase03_conflict01_recon01",
+    "phase" : "phase_3",
+    "territory" : "Contested Airspace (Separatist)",
+    "unitFloor" : "7★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase03_conflict02_recon01",
+    "phase" : "phase_3",
+    "territory" : "Separatist Command",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase03_conflict03_recon01",
+    "phase" : "phase_3",
+    "territory" : "Petranaki Arena",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase04_conflict01_recon01",
+    "phase" : "phase_4",
+    "territory" : "Separatist Armada",
+    "unitFloor" : "7★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase04_conflict02_recon01",
+    "phase" : "phase_4",
+    "territory" : "Factory Waste",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "geonosis_republic_phase04_conflict03_recon01",
+    "phase" : "phase_4",
+    "territory" : "Canyons",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  } ]
+}

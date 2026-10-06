@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="farmTable(targets)">
+    <table class="table table-sm small">
+        <thead>
+        <tr><th>Unit</th><th>Needed at</th><th>Phase</th><th class="text-end">Slots short</th><th>Closest in guild</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="f : ${targets}">
+            <td th:text="${f.unitName}"></td>
+            <td th:text="${f.floor}"></td>
+            <td th:text="${#strings.replace(f.phase, 'phase_', '')}"></td>
+            <td class="text-end" th:text="${f.slotsShort}"></td>
+            <td th:text="${#lists.isEmpty(f.closest)} ? 'Nobody owns it' : ${#strings.listJoin(f.closest, ', ')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</th:block>
+
+<th:block th:fragment="platoonNotes(source, warnings)">
+    <p class="small text-muted" th:if="${source == 'none' or source == 'template'}">
+        No platoon units known for this TB yet. Fill in <code>platoons/&lt;tbId&gt;.json</code>
+        (unit names from swgoh.gg work), or fetch the guild while this TB is running to capture them live.
+    </p>
+    <ul class="small text-warning" th:if="${warnings != null and #lists.size(warnings) > 0}">
+        <li th:each="w : ${warnings}" th:text="${w}"></li>
+    </ul>
+</th:block>
+</body>
+</html>

@@ -24,9 +24,14 @@ public record GameData(
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Category(String id, String descKey, boolean visible) {}
 
-    /** One entry per (unit, rarity) -- dedupe by baseId. combatType 1 = character, 2 = ship. */
+    /**
+     * One entry per (unit, rarity) -- dedupe by baseId. combatType 1 = character, 2 = ship.
+     * Event/raid variants (GENERALKENOBI_GLE, VADER_JKL_EVENT ...) share the real unit's
+     * name and have a far-future obtainableTime; real units have "0".
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record UnitDef(String baseId, String nameKey, int combatType, boolean obtainable, List<String> categoryId) {}
+    public record UnitDef(String baseId, String nameKey, int combatType, boolean obtainable,
+                          String obtainableTime, List<String> categoryId) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record TbDef(
@@ -35,8 +40,29 @@ public record GameData(
             int roundCount,
             List<ConflictZone> conflictZoneDefinition,
             List<MissionZone> strikeZoneDefinition,
-            List<MissionZone> covertZoneDefinition
+            List<MissionZone> covertZoneDefinition,
+            List<ReconZone> reconZoneDefinition
     ) {}
+
+    /**
+     * A platoon zone. Static data has the structure and unit floor but not the
+     * units each squad needs -- those only exist in the live guild TB status
+     * (see PlatoonService). unitRelicTier is raw (7 = R5, 1 = none).
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record ReconZone(
+            ZoneDef zoneDefinition,
+            int unitRarity,
+            int unitRelicTier,
+            int combatType,
+            List<PlatoonDef> platoonDefinition
+    ) {}
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record PlatoonDef(String id, List<SquadDef> squad) {}
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record SquadDef(String id) {}
 
     /** A territory. forceAlignment 1 = mixed, 2 = light, 3 = dark. */
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -51,7 +77,7 @@ public record GameData(
     public record MissionZone(CampaignElementId campaignElementIdentifier, ZoneDef zoneDefinition, int combatType) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ZoneDef(String zoneId, String nameKey, String linkedConflictId) {}
+    public record ZoneDef(String zoneId, String nameKey, String linkedConflictId, int maxUnitCountPerPlayer) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record CampaignElementId(

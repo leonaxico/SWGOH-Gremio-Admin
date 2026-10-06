@@ -6,3 +6,7 @@ comlink:
   # Localization file used for unit / territory / requirement names:
   # ENG_US, SPA_XM, POR_BR, FRE_FR, GER_DE, ITA_IT, ...
   language: ${COMLINK_LANGUAGE:ENG_US}
+
+platoons:
+  # One <tbId>.json per Territory Battle (see README "Platoons").
+  dir: ${PLATOONS_DIR:platoons}

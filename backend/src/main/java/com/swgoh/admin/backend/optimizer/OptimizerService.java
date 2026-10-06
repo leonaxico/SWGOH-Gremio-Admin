@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Plans one TB phase. In a TB every player may attempt every mission once,
@@ -31,6 +32,7 @@ import java.util.Optional;
  *       of the player's remaining missions (then the strongest), so scarce
  *       units aren't burned on missions anything could fill.</li>
  * </ol>
+ * Units already spent on platoons (see PlatoonPlanner) are left out of step 2.
  * Missions nobody can attempt are reported with 0 eligible players.
  */
 @Service
@@ -44,7 +46,11 @@ public class OptimizerService {
 
     public record Result(List<MissionSummary> missions, List<Assignment> assignments) {}
 
-    public Result optimizePhase(Guild guild, List<MissionRequirement> missions) {
+    /**
+     * @param reserved allyCode -> baseIds already spent this phase (platoons);
+     *                 they still count for eligibility but aren't planned into squads.
+     */
+    public Result optimizePhase(Guild guild, List<MissionRequirement> missions, Map<String, Set<String>> reserved) {
         Comparator<Unit> strongestFirst = Comparator.comparingInt(Unit::power).reversed();
 
         Map<String, Integer> eligible = new HashMap<>();
@@ -68,6 +74,7 @@ public class OptimizerService {
         Map<String, Integer> assigned = new HashMap<>();
         for (Player player : guild.getPlayers().values()) {
             Map<String, Unit> available = new LinkedHashMap<>(player.getUnits());
+            reserved.getOrDefault(player.getAllyCode(), Set.of()).forEach(available::remove);
             for (int i = 0; i < ordered.size(); i++) {
                 MissionRequirement mission = ordered.get(i);
                 List<MissionRequirement> remaining = ordered.subList(i + 1, ordered.size());

@@ -7,6 +7,10 @@ public record OptimizeResponseDto(
         String tbName,
         String phase,
         int guildMembers,
+        String platoonSource,
+        List<String> platoonWarnings,
+        List<PlatoonResultDto> platoons,
+        List<FarmTargetDto> farm,
         List<MissionSummaryDto> missions,
         List<AssignmentDto> assignments
 ) {}

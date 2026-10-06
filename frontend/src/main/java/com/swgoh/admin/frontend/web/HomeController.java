@@ -1,6 +1,7 @@
 package com.swgoh.admin.frontend.web;
 
 import com.swgoh.admin.frontend.client.BackendClient;
+import com.swgoh.admin.frontend.dto.FarmReportDto;
 import com.swgoh.admin.frontend.dto.GuildSummaryDto;
 import com.swgoh.admin.frontend.dto.OptimizeResponseDto;
 import org.springframework.stereotype.Controller;
@@ -41,6 +42,16 @@ public class HomeController {
         model.addAttribute("tbs", backendClient.listTbs());
         model.addAttribute("selectedTb", tbId);
         model.addAttribute("selectedPhase", phase);
+        model.addAttribute("allyCode", "191483497");
+        return "index";
+    }
+
+    @PostMapping("/farm")
+    public String farm(@RequestParam String tbId, Model model) {
+        FarmReportDto report = backendClient.farm(tbId);
+        model.addAttribute("farmReport", report);
+        model.addAttribute("tbs", backendClient.listTbs());
+        model.addAttribute("selectedTb", tbId);
         model.addAttribute("allyCode", "191483497");
         return "index";
     }

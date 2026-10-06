@@ -1,0 +1,407 @@
+{
+  "tbId" : "t02D",
+  "tbName" : "Hoth: Imperial Retaliation",
+  "source" : "template",
+  "instructions" : "Fill each platoon's \"units\" with the units it requires: names as shown in game or on swgoh.gg (English), or base ids like VADER. Repeat a unit when the platoon needs it more than once (usually 15 units per platoon: 3 squads of 5). Set \"source\" to \"manual\" once filled. This file is overwritten by live data when the guild is fetched during an active TB; your version is then kept as <tbId>.manual.json.",
+  "zones" : [ {
+    "zoneId" : "hoth_empire_phase01_conflict01_recon01",
+    "phase" : "phase_1",
+    "territory" : "Imperial Flank",
+    "unitFloor" : "2★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase01_conflict02_recon01",
+    "phase" : "phase_1",
+    "territory" : "Imperial Landing",
+    "unitFloor" : "2★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase02_conflict01_recon01",
+    "phase" : "phase_2",
+    "territory" : "Snowfields",
+    "unitFloor" : "3★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase02_conflict02_recon01",
+    "phase" : "phase_2",
+    "territory" : "Forward Stronghold",
+    "unitFloor" : "3★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase03_conflict01_recon01",
+    "phase" : "phase_3",
+    "territory" : "Imperial Fleet Staging Area",
+    "unitFloor" : "4★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase03_conflict02_recon01",
+    "phase" : "phase_3",
+    "territory" : "Ion Cannon",
+    "unitFloor" : "4★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase03_conflict03_recon01",
+    "phase" : "phase_3",
+    "territory" : "Outer Pass",
+    "unitFloor" : "4★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase04_conflict01_recon01",
+    "phase" : "phase_4",
+    "territory" : "Contested Airspace",
+    "unitFloor" : "5★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase04_conflict02_recon01",
+    "phase" : "phase_4",
+    "territory" : "Power Generator",
+    "unitFloor" : "5★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase04_conflict03_recon01",
+    "phase" : "phase_4",
+    "territory" : "Rear Trenches",
+    "unitFloor" : "5★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase05_conflict01_recon01",
+    "phase" : "phase_5",
+    "territory" : "Forward Airspace",
+    "unitFloor" : "6★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase05_conflict02_recon01",
+    "phase" : "phase_5",
+    "territory" : "Forward Trenches",
+    "unitFloor" : "6★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase05_conflict03_recon01",
+    "phase" : "phase_5",
+    "territory" : "Overlook",
+    "unitFloor" : "6★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase06_conflict01_recon01",
+    "phase" : "phase_6",
+    "territory" : "Rear Airspace",
+    "unitFloor" : "7★ ships",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase06_conflict02_recon01",
+    "phase" : "phase_6",
+    "territory" : "Rebel Base (Main Entrance)",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  }, {
+    "zoneId" : "hoth_empire_phase06_conflict03_recon01",
+    "phase" : "phase_6",
+    "territory" : "Rebel Base (South Entrance)",
+    "unitFloor" : "7★",
+    "maxUnitsPerPlayer" : 10,
+    "platoons" : [ {
+      "platoon" : 1,
+      "units" : [ ]
+    }, {
+      "platoon" : 2,
+      "units" : [ ]
+    }, {
+      "platoon" : 3,
+      "units" : [ ]
+    }, {
+      "platoon" : 4,
+      "units" : [ ]
+    }, {
+      "platoon" : 5,
+      "units" : [ ]
+    }, {
+      "platoon" : 6,
+      "units" : [ ]
+    } ]
+  } ]
+}

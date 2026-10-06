@@ -67,6 +67,8 @@
                 </div>
                 <div class="col-auto">
                     <button type="submit" class="btn btn-primary">Run optimization</button>
+                    <button type="submit" class="btn btn-outline-secondary" th:formaction="@{/farm}"
+                            title="Platoon readiness for every phase of the selected TB">Platoon farm list</button>
                 </div>
             </form>
         </div>
@@ -79,9 +81,54 @@
             <p class="text-muted small mb-3">
                 <b>Eligible</b>: players who could field the squad with their whole roster.
                 <b>Planned</b>: players assigned once each player's units are shared out across
-                the phase (a unit can only be used once per phase). Missions are planned
-                scarcest-first.
+                the phase (a unit can only be used once per phase). Platoons are planned first;
+                missions use the units left over, scarcest mission first.
             </p>
+            <h6 class="mt-2">Platoons
+                <span class="badge text-bg-light border" th:text="'source: ' + ${result.platoonSource}"></span>
+            </h6>
+            <div th:replace="~{fragments :: platoonNotes(${result.platoonSource}, ${result.platoonWarnings})}"></div>
+            <table class="table table-sm align-middle mb-4" th:if="${#lists.size(result.platoons) > 0}">
+                <thead>
+                <tr>
+                    <th>Platoon</th>
+                    <th>Floor</th>
+                    <th class="text-end">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="pl : ${result.platoons}">
+                    <tr th:classappend="${pl.complete} ? 'table-success' : 'table-warning'">
+                        <td th:text="${pl.territory} + ' · Platoon ' + ${pl.platoon}"></td>
+                        <td th:text="${pl.floor}"></td>
+                        <td class="text-end"
+                            th:text="${pl.complete} ? 'Complete' : ${pl.missingSlots} + ' slot(s) short'"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="pt-0 border-0">
+                            <details class="ms-3 mb-2">
+                                <summary class="small text-muted">Slots</summary>
+                                <table class="table table-sm small mb-0">
+                                    <tr th:each="s : ${pl.slots}" th:classappend="${s.missing} ? 'text-danger'">
+                                        <td th:text="${s.unitName}"></td>
+                                        <td th:if="${s.missing}"
+                                            th:text="${#lists.isEmpty(s.closest)} ? 'Nobody owns it' : 'Missing · closest: ' + ${#strings.listJoin(s.closest, ', ')}"></td>
+                                        <td th:unless="${s.missing}"
+                                            th:text="${s.playerName != null} ? ${s.playerName} + (${s.preFilled} ? ' (already placed)' : '') : 'available, held back (platoon incomplete)'"></td>
+                                    </tr>
+                                </table>
+                            </details>
+                        </td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+            <div th:if="${#lists.size(result.farm) > 0}" class="mb-4">
+                <h6>Farm list for this phase</h6>
+                <div th:replace="~{fragments :: farmTable(${result.farm})}"></div>
+            </div>
+
+            <h6>Missions</h6>
             <table class="table table-sm align-middle">
                 <thead>
                 <tr>
@@ -125,7 +172,28 @@
             </table>
         </div>
     </div>
+
+    <div class="card mb-4" th:if="${farmReport != null}">
+        <div class="card-body">
+            <h5 class="card-title" th:text="${farmReport.tbName} + ' · platoon farm list'"></h5>
+            <p><span class="badge text-bg-light border" th:text="'source: ' + ${farmReport.platoonSource}"></span></p>
+            <div th:replace="~{fragments :: platoonNotes(${farmReport.platoonSource}, ${farmReport.platoonWarnings})}"></div>
+            <table class="table table-sm w-auto mb-4" th:if="${#lists.size(farmReport.phases) > 0}">
+                <thead><tr><th>Phase</th><th class="text-end">Platoons complete</th></tr></thead>
+                <tbody>
+                <tr th:each="ph : ${farmReport.phases}">
+                    <td th:text="${#strings.replace(ph.phase, 'phase_', 'Phase ')}"></td>
+                    <td class="text-end" th:text="${ph.completePlatoons} + ' / ' + ${ph.totalPlatoons}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${#lists.size(farmReport.farm) > 0}">
+                <div th:replace="~{fragments :: farmTable(${farmReport.farm})}"></div>
+            </div>
+        </div>
+    </div>
 </div>
+
 <script>
     // Phase options follow the selected TB (each TB lists its own phases).
     const tbSelect = document.getElementById('tbId');
